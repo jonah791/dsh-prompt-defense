@@ -1,0 +1,8 @@
+node_modules/
+lib/
+*.log
+data/
+.dsh/
+
+*.bak
+*.bak-*
