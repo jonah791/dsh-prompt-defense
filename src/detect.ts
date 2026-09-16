@@ -201,7 +201,8 @@ function stringify(args: unknown): string {
 }
 
 /**
- * 判断一次工具调用是否为「高危动作」（在污点存在时需要人审）。
+ * 判断一次工具调用是否为「高危动作」（污点存在时会被**观测并落审计**——
+ * 2026-09-16 起不再用于升人审：防御只让主体看得见，不替主体决定，见 index.ts 文件头）。
  *
  * 判据按工具分流（2026-09-16 修订，见文件头）：
  * - 只读工具 ⇒ 一律放行；
@@ -264,7 +265,12 @@ export function untrustedHeader(toolName: string, assessment: InjectionAssessmen
 /** 审计行的形状（一行一 JSON，可 tail / grep / 与会话事件流 join）。 */
 export interface TraceLine {
   atMs: number
-  phase: 'injection-hit' | 'taint-set' | 'taint-clear' | 'danger-ask' | 'danger-hardblock' | 'error'
+  /**
+   * 阶段枚举。`danger-observed` 取代旧的 `danger-ask`——2026-09-16 起防御
+   * **不再做人工审核**（人审曾把决策权交给不在场的第三方，且在审批策略 never
+   * 下退化为静默拒绝 ⇒ 上线首夜自锁两次）。旧值保留以兼容历史日志。
+   */
+  phase: 'injection-hit' | 'taint-set' | 'taint-clear' | 'danger-observed' | 'danger-ask' | 'danger-hardblock' | 'error'
   sessionId?: string
   tool?: string
   score?: number

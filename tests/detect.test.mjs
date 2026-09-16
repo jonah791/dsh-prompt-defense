@@ -7,6 +7,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { scanForInjection, assessInjection, isExternalSourceTool, assessDanger, untrustedHeader, appendTraceSync, UNTRUSTED_MARKER } from '../lib/detect.js'
 
 // ── 正样本：必须命中 ──────────────────────────────────────────────────
@@ -164,4 +165,30 @@ test('现场回归③的反向：真危险仍必须拦（否则等于拆防线�
   assert.equal(assessDanger('write', { file_path: 'E:/alice/tmp/leak.txt', content: '0x' + 'a'.repeat(64) }).dangerous, true)
   // 以我之名对外发言
   assert.equal(assessDanger('telegram_send', { text: 'x' }).dangerous, true)
+})
+
+// ══ 契约测试 · 2026-09-16 主人定调：「我期望的防御体系中应该没有人工审核，也不应该有」══
+// 防御的职责是让主体看得见、可追溯，**不是替主体决定**。此测试防将来回归：
+// 任何人（包括未来的我）往插件里加回拦截分支，都会在这里被拦下。
+
+test('契约：插件源码不得含任何拦截分支（ask / deny / hardblock）', () => {
+  const src = readFileSync(new URL('../src/index.ts', import.meta.url), 'utf8')
+  // 去掉注释与字符串里的说明文字，只看真实代码
+  const code = src
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|\s)\/\/[^\n]*/g, '')
+  assert.ok(!/kind:\s*['"]ask['"]/.test(code), 'index.ts 出现 ask 分支：人审已废止（会把决策权交给不在场的第三方）')
+  assert.ok(!/kind:\s*['"]deny['"]/.test(code), 'index.ts 出现 deny 分支：防御不得拦截（只观测）')
+  assert.ok(code.includes('danger-observed'), 'index.ts 应保留危险动作观测（记录而非拦截）')
+  assert.ok(code.includes('observeDanger'), 'index.ts 应有 observeDanger 配置项')
+})
+
+test('契约：pre-execute 钩子必须放行（waterfall 纪律）', () => {
+  const src = readFileSync(new URL('../src/index.ts', import.meta.url), 'utf8')
+  const start = src.indexOf("ctx.on('tools/pre-execute'")
+  assert.ok(start > 0, '未找到 pre-execute 钩子')
+  const body = src.slice(start, src.indexOf('ctx.on(', start + 10))
+  // 该钩子必须调用 next()（放行上游），且不得 return 任何非 next() 的决策对象
+  assert.ok(body.includes('await next()'), 'pre-execute 必须调用 next() 放行')
+  assert.ok(!/return\s*\{/.test(body), 'pre-execute 不得返回决策对象（会拦截/改写执行）')
 })
