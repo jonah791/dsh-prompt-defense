@@ -227,7 +227,7 @@ npm test        # = node tests/detect.test.mjs
 
 ## 相关文档
 
-- 设计文档（威胁模型 · L0–L6 分层 · 可证伪验收 A1–A6 · 实践修订记录）：`<工作区>/docs/prompt-defense.md`
+- 设计文档（威胁模型 · L0–L6 分层 · 可证伪验收 A1–A6 · 实践修订记录）：`<工作区>/docs/design/prompt-defense.md`
 - 运行纪律（提示词注入防御纪律）：`<工作区>/AGENTS.md §5.27`
 - 语义文档：**待登记**（本插件先上线后补，`docs/semantic.md` 尚未创建——未决事项）
 - 中心仓库（全部自研插件清单）：[alice-digital-life](https://github.com/jonah791/alice-digital-life)
