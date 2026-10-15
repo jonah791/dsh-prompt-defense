@@ -160,7 +160,7 @@ export const READ_ONLY_TOOLS: ReadonlySet<string> = new Set([
   'plugin_list', 'plugin_inspect', 'plugin_boot_status', 'prompt_defense_status',
   'life_core_status', 'life_status', 'context_health', 'context_marks', 'prune_candidates',
   'session_eject_status', 'selftest_list', 'selftest_findings', 'semantic_list', 'semantic_get', 'semantic_check',
-  'evolution_status', 'evolution_history', 'growth_profile', 'radar_list', 'radar_digest', 'taskboard_list',
+  'evolution_status', 'evolution_history', 'growth_profile', 'opp_list', 'opp_digest', 'opp_sources', 'taskboard_list',
   'job_list', 'job_output', 'list_agents', 'browser_console', 'browser_page', 'webops_read',
 ])
 
