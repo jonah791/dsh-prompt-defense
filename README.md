@@ -1,6 +1,6 @@
 <!--
   dsh-prompt-defense · 生态公约声明（逐项与源码核对）
-  purpose  : 让外部内容永远只是数据——标记来源、检测注入、观测危险动作、全量审计（**不做任何拦截**）
+  purpose: 让外部内容永远只是数据——标记来源、检测注入、观测危险动作、全量审计（**不做任何拦截**）
   inject   : ['tools']
   tools    : prompt_defense_status
   runtime  : host（Node 侧；注册 tools/post-execute + tools/pre-execute + session/event 三个接入点）
